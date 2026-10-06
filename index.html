@@ -129,48 +129,46 @@
     .moods { flex-direction: column; gap: 28px; margin-top: 36px; }
   }
 
-  /* Touch screens have no hover: show both photos as a split screen,
-     ZEN on top and FOCUS below. Tapping one expands it to full screen. */
+  /* Touch screens have no hover: the question sits at the top and both photos
+     are shown side by side, ZEN left and FOCUS right. Tapping one expands it. */
   @media (hover: none) {
-    body { --ink: var(--light); --ink-soft: rgba(250,246,238,.8); }
+    body { --ink: var(--light); --ink-soft: rgba(250,246,238,.85); }
     .logo .light { opacity: 1; }
     .logo .dark { opacity: 0; }
-    .logo, footer { position: relative; z-index: 2; }
+    .logo, footer, .intro { position: relative; z-index: 2; }
 
     .bg { opacity: 1; transform: none;
-          transition: top .7s var(--ease), bottom .7s var(--ease); }
-    .bg-zen   { bottom: 50%; }
-    .bg-focus { top: 50%; }
-    body[data-mood="zen"]   .bg-zen   { bottom: 0; }
-    body[data-mood="zen"]   .bg-focus { top: 100%; }
-    body[data-mood="focus"] .bg-focus { top: 0; }
-    body[data-mood="focus"] .bg-zen   { bottom: 100%; }
+          transition: left .7s var(--ease), right .7s var(--ease); }
+    .bg-zen   { right: 50%; background-position: 62% center; }
+    .bg-focus { left: 50%; }
+    body[data-mood="zen"]   .bg-zen   { right: 0; }
+    body[data-mood="zen"]   .bg-focus { left: 100%; }
+    body[data-mood="focus"] .bg-focus { left: 0; }
+    body[data-mood="focus"] .bg-zen   { right: 100%; }
 
     /* Fixed children must not be moved by the step's fade transform */
     .step[hidden] { transform: none; }
 
+    #choose { align-self: start; }
+    .intro { margin-top: 28px; pointer-events: none; }
+    .intro .eyebrow { margin-bottom: 10px; font-size: 11px; }
+    .intro h1 { font-size: 21px; }
+
     .moods {
       position: fixed; inset: 0; z-index: 1;
-      display: grid; grid-template-rows: 1fr 1fr; gap: 0; margin: 0;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0;
     }
-    .mood { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-    .mood[data-mood="zen"]   { padding-top: 64px; }
-    .mood[data-mood="focus"] { padding-bottom: 32px; }
-    .mood .word { font-size: clamp(64px, 20vw, 120px); }
+    .mood {
+      width: 100%; min-width: 0; padding: 52vh 8px 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+    }
+    .mood .word { font-size: clamp(34px, 11vw, 64px); letter-spacing: .06em; }
+    .mood .line { font-size: 12.5px; letter-spacing: 0; line-height: 1.45; margin-top: 12px; white-space: nowrap; }
     .mood .word::after { display: none; }
-    .mood .line::after { content: " →"; }
+    .mood .line::after { content: "\00a0→"; }
     body[data-mood] .mood { opacity: 1; }
-
-    /* Question sits on a band across the seam */
-    .intro {
-      position: fixed; left: 0; right: 0; top: 50%; z-index: 2;
-      transform: translateY(-50%);
-      background: var(--cream); color: #241816;
-      padding: 14px 16px; pointer-events: none;
-    }
-    .intro .eyebrow { color: #6b5a55; margin-bottom: 6px; font-size: 11px; }
-    .intro h1 { color: #241816; font-size: 19px; }
   }
+
   @media (prefers-reduced-motion: reduce) {
     *, .bg { transition-duration: .01ms !important; }
   }

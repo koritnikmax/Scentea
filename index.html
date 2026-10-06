@@ -128,6 +128,49 @@
     form { flex-direction: column; }
     .moods { flex-direction: column; gap: 28px; margin-top: 36px; }
   }
+
+  /* Touch screens have no hover: show both photos as a split screen,
+     ZEN on top and FOCUS below. Tapping one expands it to full screen. */
+  @media (hover: none) {
+    body { --ink: var(--light); --ink-soft: rgba(250,246,238,.8); }
+    .logo .light { opacity: 1; }
+    .logo .dark { opacity: 0; }
+    .logo, footer { position: relative; z-index: 2; }
+
+    .bg { opacity: 1; transform: none;
+          transition: top .7s var(--ease), bottom .7s var(--ease); }
+    .bg-zen   { bottom: 50%; }
+    .bg-focus { top: 50%; }
+    body[data-mood="zen"]   .bg-zen   { bottom: 0; }
+    body[data-mood="zen"]   .bg-focus { top: 100%; }
+    body[data-mood="focus"] .bg-focus { top: 0; }
+    body[data-mood="focus"] .bg-zen   { bottom: 100%; }
+
+    /* Fixed children must not be moved by the step's fade transform */
+    .step[hidden] { transform: none; }
+
+    .moods {
+      position: fixed; inset: 0; z-index: 1;
+      display: grid; grid-template-rows: 1fr 1fr; gap: 0; margin: 0;
+    }
+    .mood { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .mood[data-mood="zen"]   { padding-top: 64px; }
+    .mood[data-mood="focus"] { padding-bottom: 32px; }
+    .mood .word { font-size: clamp(64px, 20vw, 120px); }
+    .mood .word::after { display: none; }
+    .mood .line::after { content: " →"; }
+    body[data-mood] .mood { opacity: 1; }
+
+    /* Question sits on a band across the seam */
+    .intro {
+      position: fixed; left: 0; right: 0; top: 50%; z-index: 2;
+      transform: translateY(-50%);
+      background: var(--cream); color: #241816;
+      padding: 14px 16px; pointer-events: none;
+    }
+    .intro .eyebrow { color: #6b5a55; margin-bottom: 6px; font-size: 11px; }
+    .intro h1 { color: #241816; font-size: 19px; }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, .bg { transition-duration: .01ms !important; }
   }
@@ -146,8 +189,10 @@
     <div class="stage">
       <!-- Step 1: choose a mood -->
       <section class="step" id="choose">
-        <p class="eyebrow">Coming soon</p>
-        <h1>A drink you can <em>smell</em> before you sip.<br>How do you want to feel?</h1>
+        <div class="intro">
+          <p class="eyebrow">Coming soon</p>
+          <h1>A drink you can <em>smell</em> before you sip.<br>How do you want to feel?</h1>
+        </div>
         <div class="moods">
           <button class="mood" data-mood="zen">
             <span class="word">ZEN</span>
@@ -211,12 +256,15 @@
     if (mood) body.dataset.mood = mood; else delete body.dataset.mood;
   }
 
+  const canHover = window.matchMedia("(hover: hover)");
   document.querySelectorAll(".mood").forEach(btn => {
     const mood = btn.dataset.mood;
-    btn.addEventListener("mouseenter", () => !selected && setMood(mood));
-    btn.addEventListener("focus",      () => !selected && setMood(mood));
-    btn.addEventListener("mouseleave", () => !selected && setMood(null));
-    btn.addEventListener("blur",       () => !selected && setMood(null));
+    // Hover previews only on devices with a real mouse; touch screens show the split view instead
+    const preview = m => !selected && canHover.matches && setMood(m);
+    btn.addEventListener("mouseenter", () => preview(mood));
+    btn.addEventListener("focus",      () => preview(mood));
+    btn.addEventListener("mouseleave", () => preview(null));
+    btn.addEventListener("blur",       () => preview(null));
     btn.addEventListener("click", () => {
       selected = mood;
       setMood(mood);

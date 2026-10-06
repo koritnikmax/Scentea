@@ -186,8 +186,8 @@
   </main>
 
 <script>
-  // Paste your form endpoint here (e.g. "https://formspree.io/f/xxxxxxx") to start collecting emails.
-  const FORM_ENDPOINT = "";
+  // Brevo subscription form URL: the action="..." address from the form's embed code in Brevo.
+  const BREVO_FORM_URL = "https://54065848.sibforms.com/serve/MUIFAEgmt7qzDo4sq_suSrTTF-kLNY4bVewZmfbjKu9kfeSD7d2UVMVyrQi4lJ18pRd7B7CLyMNQ_-s3_4IzgCN5VR-BGHPO8sPLhjE2vuFgExJpLoDQPvH70g6WyZk509ExmxUUP0dQ9clcQvBxAUJFzcCq4GHUidhoN1akiEgeGW8A8uecMPkKw6JPA1PtiND8oLSkPw_gWHwqmw==";
 
   const copy = {
     zen:   { name: "Zen",   title: "Your calm is brewing.",  done: "Breathe easy. You're first in line.", sub: "Check your inbox and confirm your address. Then we'll email you the moment Zen launches." },
@@ -250,19 +250,22 @@
     }
     button.disabled = true;
     try {
-      if (FORM_ENDPOINT) {
-        const res = await fetch(FORM_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ email: email.value.trim(), mood: selected })
-        });
-        if (!res.ok) throw new Error(res.status);
-      } else {
-        console.warn("FORM_ENDPOINT is not set — signup was not stored:", email.value, selected);
-      }
+      if (!BREVO_FORM_URL) throw new Error("BREVO_FORM_URL is not set");
+      const data = new FormData();
+      data.append("EMAIL", email.value.trim());
+      data.append("MOOD", copy[selected].name);
+      data.append("email_address_check", ""); // Brevo's spam honeypot, must stay empty
+      data.append("locale", "en");
+      const res = await fetch(BREVO_FORM_URL + (BREVO_FORM_URL.includes("?") ? "&" : "?") + "isAjax=1", {
+        method: "POST",
+        body: data
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || result.success === false) throw new Error(result.message || res.status);
       show("done");
-    } catch {
-      note.textContent = "Something went wrong. Please try again.";
+    } catch (err) {
+      console.error("Signup failed:", err);
+      note.textContent = "That didn't go through. Please check your connection and try again.";
     } finally {
       button.disabled = false;
     }

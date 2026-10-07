@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Scentea — Drink different.</title>
-<meta name="description" content="Scentea is launching soon. Choose your mood — Zen or Focus — and be the first to know when it drops.">
+<meta name="description" content="Scentea is launching soon. Choose your mood — Zen or Energy — and be the first to know when it drops.">
 <link rel="icon" href="assets/logo-dark.png?v=2">
 <link rel="stylesheet" href="assets/fonts.css">
 <style>
@@ -34,9 +34,9 @@
   }
   .bg::after { content: ""; position: absolute; inset: 0; background: rgba(20,12,10,.45); }
   .bg-zen   { background-image: url("assets/img/zen.jpg"); }
-  .bg-focus { background-image: url("assets/img/focus.jpg"); }
+  .bg-energy { background-image: url("assets/img/energy.jpg"); }
   body[data-mood="zen"]   .bg-zen,
-  body[data-mood="focus"] .bg-focus { opacity: 1; transform: scale(1); }
+  body[data-mood="energy"] .bg-energy { opacity: 1; transform: scale(1); }
 
   /* Colour flips to light when a photo is behind the text */
   body[data-mood] { --ink: var(--light); --ink-soft: rgba(250,246,238,.75); }
@@ -91,8 +91,8 @@
   }
   .mood:hover .word::after, .mood:focus-visible .word::after { width: 60%; }
   .mood:focus-visible { outline: none; }
-  body[data-mood="zen"]   .mood[data-mood="focus"],
-  body[data-mood="focus"] .mood[data-mood="zen"] { opacity: .35; }
+  body[data-mood="zen"]   .mood[data-mood="energy"],
+  body[data-mood="energy"] .mood[data-mood="zen"] { opacity: .35; }
 
   form { display: flex; gap: 10px; max-width: 460px; margin: 36px auto 0; }
   input[type="email"] {
@@ -130,7 +130,7 @@
   }
 
   /* Touch screens have no hover: the question sits at the top and both photos
-     are shown side by side, ZEN left and FOCUS right. Tapping one expands it. */
+     are shown side by side, ZEN left and ENERGY right. Tapping one expands it. */
   @media (hover: none) {
     body { --ink: var(--light); --ink-soft: rgba(250,246,238,.85); }
     .logo .light { opacity: 1; }
@@ -140,11 +140,11 @@
     .bg { opacity: 1; transform: none;
           transition: left .7s var(--ease), right .7s var(--ease); }
     .bg-zen   { right: 50%; background-position: 62% center; }
-    .bg-focus { left: 50%; }
+    .bg-energy { left: 50%; }
     body[data-mood="zen"]   .bg-zen   { right: 0; }
-    body[data-mood="zen"]   .bg-focus { left: 100%; }
-    body[data-mood="focus"] .bg-focus { left: 0; }
-    body[data-mood="focus"] .bg-zen   { right: 100%; }
+    body[data-mood="zen"]   .bg-energy { left: 100%; }
+    body[data-mood="energy"] .bg-energy { left: 0; }
+    body[data-mood="energy"] .bg-zen   { right: 100%; }
 
     /* Fixed children must not be moved by the step's fade transform */
     .step[hidden] { transform: none; }
@@ -162,7 +162,7 @@
       width: 100%; min-width: 0; padding: 52vh 8px 0;
       display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     }
-    .mood .word { font-size: clamp(34px, 11vw, 64px); letter-spacing: .06em; }
+    .mood .word { font-size: clamp(30px, 9.5vw, 56px); letter-spacing: .04em; }
     .mood .line { font-size: 12.5px; letter-spacing: 0; line-height: 1.45; margin-top: 12px; white-space: nowrap; }
     .mood .word::after { display: none; }
     .mood .line::after { content: "\00a0→"; }
@@ -176,7 +176,7 @@
 </head>
 <body>
   <div class="bg bg-zen" aria-hidden="true"></div>
-  <div class="bg bg-focus" aria-hidden="true"></div>
+  <div class="bg bg-energy" aria-hidden="true"></div>
 
   <main>
     <div class="logo">
@@ -196,8 +196,8 @@
             <span class="word">ZEN</span>
             <span class="line">Slow down. Breathe in.</span>
           </button>
-          <button class="mood" data-mood="focus">
-            <span class="word">FOCUS</span>
+          <button class="mood" data-mood="energy">
+            <span class="word">ENERGY</span>
             <span class="line">Find your rhythm.</span>
           </button>
         </div>
@@ -234,7 +234,7 @@
 
   const copy = {
     zen:   { name: "Zen",   title: "Your Zen is brewing.",  done: "Breathe easy. You're first in line.", sub: "Check your inbox and confirm your address. Then we'll email you the moment Zen launches." },
-    focus: { name: "Focus", title: "Your Focus is brewing.",  done: "Locked in. You're first in line.", sub: "Check your inbox and confirm your address. Then we'll email you the moment Focus launches." }
+    energy: { name: "Energy", title: "Your Energy is brewing.", done: "You're in. First in line.", sub: "Check your inbox and confirm your address. Then we'll email you the moment Energy launches." }
   };
 
   const body = document.body;
@@ -244,7 +244,7 @@
 
   // Preload the background photos so hover feels instant
   ["assets/img/zen.jpg",
-   "assets/img/focus.jpg"]
+   "assets/img/energy.jpg"]
     .forEach(src => { const i = new Image(); i.src = src; });
 
   function show(name) {
